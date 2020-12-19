@@ -1,0 +1,83 @@
+<head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rye|Aladin|Lora|Roboto+Mono|Ewert|Aclonica|Architects+Daughter">
+
+</head>
+
+<body>
+    <div class="oneLine">
+        <h1>Map Setup</h1>
+    </div>
+    <div class="oneLine" id="firstMove">
+        <a>Who makes the first move?</a>
+        <input type="radio" name="first_move" value=Red [(ngModel)]="firstMove"><label for="Red" class="light">Red </label>
+        <input type="radio" name="first_move" value=Blue [(ngModel)]="firstMove"><label for="Blue" class="light">Blue </label>
+    </div>
+    <div class="oneLine" id="firstMove">
+        <a>Avaliable units: Infantry: </a><a *ngIf="infantryUnitsNumber>=0">{{infantryUnitsNumber}}</a><a *ngIf="infantryUnitsNumber<0" style="color: red;">{{infantryUnitsNumber}}</a><a> Cavalry: </a><a *ngIf="cavalryUnitsNumber>=0">{{cavalryUnitsNumber}}</a>
+        <a *ngIf="cavalryUnitsNumber<0" style="color: red;">{{cavalryUnitsNumber}}</a><a> Artillery: </a><a *ngIf="artilleryUnitsNumber>=0">{{artilleryUnitsNumber}}</a><a *ngIf="artilleryUnitsNumber<0" style="color: red;">{{artilleryUnitsNumber}}</a>
+    </div>
+    <div class="mapLink">
+        <a class=link href="https://drive.google.com/file/d/1lWxZBVZpe8rgA4oBnVlBszL0B3zIhJzx/view?usp=sharing" target="_blank">View the map</a>
+    </div>
+    <table>
+
+        <thead>
+            <col>
+            <colgroup span="12"></colgroup>
+
+            <tr>
+                <th rowspan="2" class="theadr" id="cName">County Name</th>
+                <th rowspan="2" class="theadr" id="cName">Owner</th>
+                <th rowspan="2" class="theadr" id="cName">Castle</th>
+                <th colspan="12" scope="colgroup" class="theadr">Army</th>
+            </tr>
+            <tr>
+
+                <th scope="col">Unit 1</th>
+                <th scope="col">Unit 2</th>
+                <th scope="col">Unit 3</th>
+                <th scope="col">Unit 4</th>
+                <th scope="col">Unit 5</th>
+                <th scope="col">Unit 6</th>
+                <th scope="col">Unit 7</th>
+                <th scope="col">Unit 8</th>
+                <th scope="col">Unit 9</th>
+                <th scope="col">Unit 10</th>
+                <th scope="col">Unit 11</th>
+                <th scope="col">Unit 12</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let county of globalMap.counties">
+                <!-- <td class="cName">{{county.id}}</td> -->
+                <!-- <td>{{county.owner}}</td> -->
+                <!-- <td>{{county.isCastle}}</td> -->
+                <td *ngIf="county.owner==='Neutral'" class="cName">{{county.id}}</td>
+                <td *ngIf="county.owner==='Red'" style="background-color: crimson;" class="cName">{{county.id}}</td>
+                <td *ngIf="county.owner==='Blue'" style="background-color: aqua;" class="cName">{{county.id}}</td>
+                <td><select class="owner" [(ngModel)]="county.owner" style="border: none;">                       
+                    <option value="Neutral">Neutral</option>               
+                    <option value="Red">Red</option>
+                    <option value="Blue">Blue</option> 
+                                     
+               </select>
+                </td>
+                <td *ngIf="!county.isCastle"><input type="checkbox" [(ngModel)]="county.isCastle" style="min-width: 80px;"> </td>
+                <td *ngIf="county.isCastle" style="background-color: darkolivegreen;"><input type="checkbox" [(ngModel)]="county.isCastle" style="min-width: 80px;"> </td>
+                <ng-container *ngFor="let unit of county.army; let i=index">
+                    <td *ngIf="county.owner==='Neutral'" style="background-color: darkgrey;" class="unit">{{unit.name}}</td>
+                    <td *ngIf="county.owner!='Neutral'"><select class="unit" (click)='storePrevVal(unit.id, unit.name)' (change)='setUnit(county.id, i)' [(ngModel)]="unit.name" style="border: none">
+                        <option value="None" >None</option>
+                        <option value="Infantry" >Infantry</option>
+                        <option value="Cavalry">Cavalry</option>
+                        <option value="Artillery">Artillery</option>
+                    </select>
+                    </td>
+
+                </ng-container>
+            </tr>
+        </tbody>
+    </table>
+    <button class="setMap" (click)="check()">Set Map</button>
+</body>

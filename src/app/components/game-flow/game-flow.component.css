@@ -1,0 +1,121 @@
+h1 {
+    font-family: 'Rye';
+    font-size: 250%;
+    cursor: context-menu;
+}
+
+h2 {
+    font-family: 'Rye';
+    cursor: context-menu;
+}
+
+.mapLink {
+    text-align: right;
+    margin-top: -4%;
+    font-family: 'Aladin';
+    font-size: 200%;
+    margin-bottom: 10px;
+    padding-right: 10px;
+}
+
+.link:active {
+    color: white;
+}
+
+thead {
+    text-align: left;
+}
+
+tbody {
+    overflow-y: scroll;
+    text-align: center;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    height: 100px;
+}
+
+th {
+    font-size: larger;
+    font-family: 'Aclonica';
+    text-align: center;
+    background-color: cadetblue;
+    color: white;
+    cursor: context-menu;
+}
+
+th::selection,
+h1::selection {
+    background-color: transparent;
+}
+
+th,
+td {
+    border: 1px solid black;
+    max-width: 220px;
+    min-width: auto;
+    word-break: keep-all;
+    border-radius: 5px;
+    height: 30px;
+}
+
+td {
+    font-family: 'Architects Daughter';
+}
+
+select:focus {
+    border: none;
+    outline: none;
+}
+
+.owner,
+.unit {
+    padding: 5px 15px 5px 15px;
+    font-family: 'Architects Daughter';
+    font-size: 130%;
+    width: 120px;
+    text-align: left;
+}
+
+.target {
+    padding: 5px 15px 5px 15px;
+    font-family: 'Architects Daughter';
+    font-size: 130%;
+    width: 120px;
+    text-align: left;
+    border: none;
+    background-color: burlywood;
+}
+
+#cName {
+    min-width: 110px;
+    height: 30px;
+}
+
+.cName,
+.attUnit {
+    width: 110px;
+    height: 30px;
+    font-size: 130%;
+}
+
+.attUnit {
+    text-align: left;
+}
+
+.theadr {
+    font-size: 170%;
+}
+
+.targetSelect,
+.neihgbors {
+    border: 2px solid black;
+    margin-top: 30px;
+    border-radius: 5px;
+    background-color: burlywood;
+    padding-bottom: 2px;
+    width: fit-content;
+}
