@@ -71,13 +71,37 @@ select:focus {
     outline: none;
 }
 
+button {
+    background-color: rgb(95, 158, 160);
+    padding: 0px 20px 0px 20px;
+    width: auto;
+    height: 90px;
+    border-radius: 10px;
+    font-family: 'Ewert';
+    font-size: 250%;
+    color: white;
+    outline: none;
+}
+
+button:hover {
+    background-color: #76b5b8;
+    box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+    color: black;
+}
+
+button:active {
+    background-color: #4c7e80;
+    color: black;
+}
+
 .owner,
 .unit {
     padding: 5px 15px 5px 15px;
     font-family: 'Architects Daughter';
-    font-size: 130%;
+    font-size: 115%;
     width: 120px;
     text-align: left;
+    word-break: normal;
 }
 
 .target {
@@ -97,13 +121,15 @@ select:focus {
 
 .cName,
 .attUnit {
-    width: 110px;
+    width: 120px;
     height: 30px;
     font-size: 130%;
 }
 
 .attUnit {
     text-align: left;
+    min-width: 120px;
+    word-break: normal;
 }
 
 .theadr {
@@ -118,4 +144,8 @@ select:focus {
     background-color: burlywood;
     padding-bottom: 2px;
     width: fit-content;
+}
+
+.move {
+    margin-top: 15px;
 }

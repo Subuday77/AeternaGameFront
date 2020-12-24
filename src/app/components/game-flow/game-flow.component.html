@@ -12,7 +12,6 @@
     <div class="targetSelect">
         <h2 class="selectHeader" style=" margin-left: 17px;">Select target</h2>
         <table>
-
             <thead>
                 <col>
                 <colgroup span="12"></colgroup>
@@ -24,94 +23,70 @@
                     <th colspan="12" scope="colgroup" class="theadr">Army</th>
                 </tr>
                 <tr>
-
-                    <th scope="col">Unit 1</th>
-                    <th scope="col">Unit 2</th>
-                    <th scope="col">Unit 3</th>
-                    <th scope="col">Unit 4</th>
-                    <th scope="col">Unit 5</th>
-                    <th scope="col">Unit 6</th>
-                    <th scope="col">Unit 7</th>
-                    <th scope="col">Unit 8</th>
-                    <th scope="col">Unit 9</th>
-                    <th scope="col">Unit 10</th>
-                    <th scope="col">Unit 11</th>
-                    <th scope="col">Unit 12</th>
+                    <th scope="col" style="width: 120px;">Unit 1</th>
+                    <th scope="col" style="width: 120px;">Unit 2</th>
+                    <th scope="col" style="width: 120px;">Unit 3</th>
+                    <th scope="col" style="width: 120px;">Unit 4</th>
+                    <th scope="col" style="width: 120px;">Unit 5</th>
+                    <th scope="col" style="width: 120px;">Unit 6</th>
+                    <th scope="col" style="width: 120px;">Unit 7</th>
+                    <th scope="col" style="width: 120px;">Unit 8</th>
+                    <th scope="col" style="width: 120px;">Unit 9</th>
+                    <th scope="col" style="width: 120px;">Unit 10</th>
+                    <th scope="col" style="width: 120px;">Unit 11</th>
+                    <th scope="col" style="width: 120px;">Unit 12</th>
 
                 </tr>
             </thead>
             <tbody>
                 <tr>
+
                     <td class=cName>
-                        <select class="target" [(ngModel)]="targetCounty" (change)="setTargetOwner(targetCounty)" (change)="setIsCastle(targetCounty)" (change)="setUnitList(targetCounty)" (change)="setNeighbors(targetCounty)">
-                        <!-- <option value="" disabled selected >Select</option> -->
-                        <ng-container *ngFor = "let county of fieldState">
-                             <option value={{county.name}}>{{county.name}}</option>
-                         </ng-container>
+                        <select class="target" (change)="setTarget()" [(ngModel)]="countyId">  
+                           <ng-container *ngFor="let county of globalMap.counties">                       
+                         <option  value={{county.id}}>{{county.id}}</option>  
+                           </ng-container>                       
                     </select>
                     </td>
-                    <td class="owner" *ngIf="targetOwner==='Neutral'||targetOwner===undefined">
-                        {{targetOwner}}
+
+                    <td class="owner" *ngIf="targetCounty.owner==='Neutral'||targetCounty.owner===undefined">
+                        {{targetCounty.owner}}
                     </td>
-                    <td class="owner" *ngIf="targetOwner==='Blue'" style="background-color: aqua;">
-                        {{targetOwner}}
+                    <td class="owner" *ngIf="targetCounty.owner==='Blue'" style="background-color: aqua;">
+                        {{targetCounty.owner}}
                     </td>
-                    <td class="owner" *ngIf="targetOwner==='Red'" style="background-color: crimson;">
-                        {{targetOwner}}
+                    <td class="owner" *ngIf="targetCounty.owner==='Red'" style="background-color: crimson;">
+                        {{targetCounty.owner}}
                     </td>
-                    <td class="owner" *ngIf="isCastle" style="min-width: 80px; background-color: darkolivegreen;">
+                    <td class="owner" *ngIf="targetCounty.isCastle" style="min-width: 80px; background-color: darkolivegreen;">
                         Yes
                     </td>
-                    <td class="owner" *ngIf="isCastle===false" style="min-width: 80px;">
+                    <td class="owner" *ngIf="targetCounty.isCastle===false" style="min-width: 80px;">
                         No
                     </td>
-                    <td class="owner" *ngIf="isCastle===undefined" style="min-width: 80px;">
+                    <td class="owner" *ngIf="targetCounty.isCastle===undefined" style="min-width: 80px;">
                     </td>
-                    <td class="unit">
-                        {{targetUnit1}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit2}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit3}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit4}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit5}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit6}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit7}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit8}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit9}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit10}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit11}}
-                    </td>
-                    <td class="unit">
-                        {{targetUnit12}}
-                    </td>
+                    <ng-container *ngFor="let number of [1,2,3,4,5,6,7,8,9,10,11,12]">
+                        <td *ngIf="countyId===undefined" class="unit"></td>
+                    </ng-container>
+                    <ng-container *ngFor="let unit of targetCounty.army">
+                        <td class="unit">
+                            {{unit.name}} {{unit.hp}}
+                        </td>
+                    </ng-container>
 
                 </tr>
+
             </tbody>
 
         </table>
 
     </div>
+
     <div class="neihgbors">
-        <h2 class="selectHeader" style=" margin-left: 17px;">Attack forces</h2>
+        <h2 class="selectHeader" style=" margin-left: 17px;" *ngIf="targetCounty.owner===undefined && neighbors.length===0"></h2><br *ngIf="targetCounty.owner===undefined || neighbors.length===0">
+        <h2 class="selectHeader" style=" margin-left: 17px;" *ngIf="targetCounty.owner!=currentPlayer && targetCounty.owner!=undefined && targetCounty.owner!='Neutral' && neighbors.length >0">Attack enemy</h2>
+        <h2 class="selectHeader" style=" margin-left: 17px;" *ngIf="(targetCounty.owner===currentPlayer || targetCounty.owner==='Neutral') && neighbors.length>0">Move army</h2>
         <table>
 
             <thead>
@@ -120,73 +95,38 @@
 
                 <tr>
                     <th rowspan="2" class="theadr" id="cName">County Name</th>
-                    <!-- <th rowspan="2" class="theadr" id="cName">Owner</th>
-                    <th rowspan="2" class="theadr" id="cName">Castle</th> -->
                     <th colspan="12" scope="colgroup" class="theadr">Army</th>
                 </tr>
                 <tr>
-
-                    <th scope="col">Unit 1</th>
-                    <th scope="col">Unit 2</th>
-                    <th scope="col">Unit 3</th>
-                    <th scope="col">Unit 4</th>
-                    <th scope="col">Unit 5</th>
-                    <th scope="col">Unit 6</th>
-                    <th scope="col">Unit 7</th>
-                    <th scope="col">Unit 8</th>
-                    <th scope="col">Unit 9</th>
-                    <th scope="col">Unit 10</th>
-                    <th scope="col">Unit 11</th>
-                    <th scope="col">Unit 12</th>
-
+                    <th scope="col" style="width: 120px;">Unit 1</th>
+                    <th scope="col" style="width: 120px;">Unit 2</th>
+                    <th scope="col" style="width: 120px;">Unit 3</th>
+                    <th scope="col" style="width: 120px;">Unit 4</th>
+                    <th scope="col" style="width: 120px;">Unit 5</th>
+                    <th scope="col" style="width: 120px;">Unit 6</th>
+                    <th scope="col" style="width: 120px;">Unit 7</th>
+                    <th scope="col" style="width: 120px;">Unit 8</th>
+                    <th scope="col" style="width: 120px;">Unit 9</th>
+                    <th scope="col" style="width: 120px;">Unit 10</th>
+                    <th scope="col" style="width: 120px;">Unit 11</th>
+                    <th scope="col" style="width: 120px;">Unit 12</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let county of neighbors; let i =index">
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-                        {{neighbors[i]}}
+                <tr *ngFor="let county of neighbors">
+                    <td class="cName">
+                        {{county.id}}
                     </td>
-                    <td class="attUnit" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-                        <label><input type="checkbox" >Use</label><br>
-                        <label><input type="checkbox" >Bck</label>
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
-                    </td>
-                    <td class="cName" *ngIf="getCountyInfo(neighbors[i],'owner')===currentPlayer">
-
+                    <td *ngFor="let unit of county.army" class="attUnit">
+                        <label style="font-size: smaller;" *ngIf="unit.numberOfSteps>0"><input type="checkbox" [(ngModel)]="unit.isInUse" *ngIf="unit.numberOfSteps>0">Use</label><br *ngIf="targetCounty.owner!=currentPlayer && targetCounty.owner!='Neutral' && unit.name!='None' && unit.numberOfSteps>0">
+                        <label *ngIf="targetCounty.owner!=currentPlayer && targetCounty.owner!='Neutral'&& unit.name!='None' && unit.numberOfSteps>0" style="font-size: smaller;"><input type="checkbox" (click) = selectUse(unit) [(ngModel)]="unit.isSupport" *ngIf="targetCounty.owner!=currentPlayer && targetCounty.owner!='Neutral'&& unit.name!='None' && unit.numberOfSteps>0">Support</label>
+                        <br *ngIf="unit.numberOfSteps>0">{{unit.name}} {{unit.hp}}
                     </td>
 
                 </tr>
             </tbody>
         </table>
+
     </div>
+    <button class="move" (click)="makeMove()">Go!</button>
 </body>

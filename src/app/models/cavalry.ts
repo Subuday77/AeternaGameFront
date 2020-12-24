@@ -6,6 +6,7 @@ export class Cavalry extends Unit {
     constructor(id: string, side: string, currentCounty: string) {
         super(id, side, currentCounty, 2, 10);
         this.name = "Cavalry"
+        this.hp = 100;
     }
 
 }
