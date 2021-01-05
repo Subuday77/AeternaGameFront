@@ -10,12 +10,14 @@ import { TextareaAutosizeModule } from 'ngx-textarea-autosize';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { HttpClientModule } from '@angular/common/http';
 import { GameFlowComponent } from './components/game-flow/game-flow.component';
+import { SwapSideComponent } from './components/swap-side/swap-side.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MapSetupComponent,
-    GameFlowComponent
+    GameFlowComponent,
+    SwapSideComponent
   ],
   imports: [
     BrowserModule,

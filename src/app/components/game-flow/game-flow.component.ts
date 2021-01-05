@@ -20,7 +20,9 @@ export class GameFlowComponent implements OnInit {
   targetCounty: County = {} as County;
   moveResults = [];
   attackResults = [];
+  deadResults = [];
   retreatedUnits = [];
+  newDeadUnits = [];
   neighbors = [];
   friendlyNeighbors = [];
   isPanic = false;
@@ -96,7 +98,9 @@ export class GameFlowComponent implements OnInit {
   }
 
   makeMove() {
-
+    this.moveResults = [];
+    this.attackResults = [];
+    this.deadResults = [];
     // console.log(this.neighbors[0])
     // console.log(this.checkUseSupport());
     // console.log(this.checkForSpace());
@@ -110,7 +114,9 @@ export class GameFlowComponent implements OnInit {
     }
     // console.log(this.globalMap.counties[0])
     // console.log(this.dataTransfer.fildState.counties[0])
-
+    if (this.isNoMoreMoves()) {
+      this.errorOutOfMoves();
+    }
 
   }
 
@@ -222,11 +228,14 @@ export class GameFlowComponent implements OnInit {
     return isNotOnlySupport;
   }
 
+
+
   errorEmptyAttack() {
     Swal.fire({
       title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">No unit selected. Select at least one.</p>`,
       confirmButtonColor: '#5f9ea0',
       toast: true,
+      position: 'top',
       background: '#e6e6e6',
       confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
 
@@ -238,6 +247,7 @@ export class GameFlowComponent implements OnInit {
       title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">All units are marked as support. Please, send to attack at least one.</p>`,
       confirmButtonColor: '#5f9ea0',
       toast: true,
+      position: 'top',
       background: '#e6e6e6',
       confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
 
@@ -249,6 +259,7 @@ export class GameFlowComponent implements OnInit {
       title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">Unit ` + pos + ` in ` + countyId + ` county is marked as "Support" without "Use". Please, check.</p>`,
       confirmButtonColor: '#5f9ea0',
       toast: true,
+      position: 'top',
       background: '#e6e6e6',
       confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
 
@@ -259,6 +270,7 @@ export class GameFlowComponent implements OnInit {
       title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">Not enough space in the target county. Remove ` + num + ` units from attack (move) or use them as support (If relevant).</p>`,
       confirmButtonColor: '#5f9ea0',
       toast: true,
+      position: 'top',
       background: '#e6e6e6',
       confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
 
@@ -270,6 +282,7 @@ export class GameFlowComponent implements OnInit {
       title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">You are trying to use in attack more artillery than infantry. Remove ` + num + ` artillery unit(s) from attack or use more infantry.</p>`,
       confirmButtonColor: '#5f9ea0',
       toast: true,
+      position: 'top',
       background: '#e6e6e6',
       confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
 
@@ -280,11 +293,50 @@ export class GameFlowComponent implements OnInit {
       title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">Invalid ratio between artillery and infantry in attack. Move ` + num + ` artillery unit(s) to support or use more infantry in attack.</p>`,
       confirmButtonColor: '#5f9ea0',
       toast: true,
+      position: 'top',
+      background: '#e6e6e6',
+      confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
+
+    });
+
+  }
+  errorOutOfMoves() {
+    Swal.fire({
+      title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">There are no more available moves for the ` + this.currentPlayer + ` player. Press OK to change side.</p>`,
+      confirmButtonColor: '#5f9ea0',
+      toast: true,
+      position: 'top',
+      background: '#e6e6e6',
+      confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.changeSide();
+      }
+    });
+  }
+  attackerWin() {
+    Swal.fire({
+      title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">Attacker won. Units were moved.</p>`,
+      confirmButtonColor: '#5f9ea0',
+      toast: true,
+      position: 'top',
       background: '#e6e6e6',
       confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
 
     });
   }
+  defenderWin() {
+    Swal.fire({
+      title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">Defender won. No units were moved.</p>`,
+      confirmButtonColor: '#5f9ea0',
+      toast: true,
+      position: 'top',
+      background: '#e6e6e6',
+      confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
+
+    });
+  }
+
 
   moveArmyExtract() {
     let unitsToMove = [];
@@ -341,14 +393,13 @@ export class GameFlowComponent implements OnInit {
   }
 
   attackEnemyExtract() {
-
     if (this.checkInfantryArtillery() && this.checkIfOnlySupport()) {
       this.causeDamage();
-
       if (this.attackerWon()) {
         this.prepareFriendlyNeighbors();
         this.runAway();
         this.moveArmyExtract();
+        this.attackerWin();
         console.log(this.targetCounty);
         console.log(this.friendlyNeighbors);
       } else {
@@ -360,10 +411,12 @@ export class GameFlowComponent implements OnInit {
           });
         });
         this.searchForDeadUnits();
+        this.defenderWin();
       }
       this.targetCounty.army.forEach(unit => {
         this.setupNumberOfSteps(unit);
       });
+      this.recordDeads();
     }
   }
 
@@ -546,6 +599,7 @@ export class GameFlowComponent implements OnInit {
     });
   }
   searchForDeadUnits() {
+    this.newDeadUnits = [];
     this.neighbors.forEach(county => {
       county.army.forEach(unit => {
         this.deadUnit(county, unit);
@@ -559,10 +613,12 @@ export class GameFlowComponent implements OnInit {
   }
 
   deadUnit(county, unit) {
+
     if (unit.name != "None" && unit.hp <= 0) {
       unit.name = "Dead";
       this.setupNumberOfSteps(unit);
       this.cemetery.push(unit);
+      this.newDeadUnits.push(unit);
     }
     county.army = county.army.filter(function (unit) {
       return (unit.name != "Dead");
@@ -650,6 +706,104 @@ export class GameFlowComponent implements OnInit {
     });
   }
 
+  recordDeads() {
+    this.deadResults = [];
+    var countyList = [];
+    this.newDeadUnits.forEach(unit => {
+      countyList.push(unit.currentCounty);
+    });
+    var mySet = new Set(countyList);
+    countyList = [...mySet];
+    countyList.forEach(countyName => {
+      var artilleryCount = 0;
+      var cavalryCount = 0;
+      var infantryCount = 0;
+      this.newDeadUnits.forEach(unit => {
+        switch (unit.id.charAt(0)) {
+          case "A":
+            if (unit.currentCounty === countyName) {
+              artilleryCount++;
+            }
+            break;
+          case "C":
+            if (unit.currentCounty === countyName) {
+              cavalryCount++;
+            }
+            break;
+          case "I":
+            if (unit.currentCounty === countyName) {
+              infantryCount++;
+            }
+            break;
+          default:
+            break;
+        }
+      });
+      this.deadResults.push(new MoveResult(artilleryCount, "Artillery", countyName, countyName));
+      this.deadResults.push(new MoveResult(cavalryCount, "Cavalry", countyName, countyName));
+      this.deadResults.push(new MoveResult(infantryCount, "Infantry", countyName, countyName));
+    });
+    console.log("this.deadResults")
+    console.log(this.deadResults)
+  }
+  changeSide() {
+
+    if (!this.isNoMoreMoves()) {
+
+      Swal.fire({
+        title: `<p style="font-family:'Aladin';color:cadetblue;">` + this.currentPlayer + ` player still has an available moves. Are you sure, you want to change side?</p>`,
+        showCancelButton: true,
+        cancelButtonColor: '#5f9ea0',
+        confirmButtonColor: '#5f9ea0',
+        background: '#e6e6e6',
+        confirmButtonText: `<p style="font-family:'Ewert';">Yes</p>`,
+        cancelButtonText: `<p style="font-family:'Ewert';">No</p>`,
+
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (this.dataTransfer.firstMove === "Blue") {
+            this.dataTransfer.firstMove = "Red";
+          } else {
+            this.dataTransfer.firstMove = "Blue";
+          }
+          this.globalMap.counties.forEach(county => {
+            county.army.forEach(unit => {
+              unit.isInUse = false;
+              unit.isSupport = false;
+              if (unit.name === "Cavalry") {
+                unit.numberOfSteps = 2;
+              }
+              else if (unit.name === "Artillery" || unit.name === "Infantry") {
+                unit.numberOfSteps = 1
+              }
+            });
+          });
+          this.router.navigate(['swapSide'])
+        }
+      });
+    } else {
+      if (this.dataTransfer.firstMove === "Blue") {
+        this.dataTransfer.firstMove = "Red";
+      } else {
+        this.dataTransfer.firstMove = "Blue";
+      }
+      this.globalMap.counties.forEach(county => {
+        county.army.forEach(unit => {
+          unit.isInUse = false;
+          unit.isSupport = false;
+          if (unit.name === "Cavalry") {
+            unit.numberOfSteps = 2;
+          }
+          else if (unit.name === "Artillery" || unit.name === "Infantry") {
+            unit.numberOfSteps = 1
+          }
+        });
+      });
+      this.router.navigate(['swapSide'])
+    }
+  }
+
+
   selectUse(unit) {
     if (!unit.isSupport) {
       unit.isInUse = true;
@@ -675,5 +829,16 @@ export class GameFlowComponent implements OnInit {
     for (var i = county.army.length; i < 12; i++) {
       county.army.push(new Unit("None", "None", "None", 0, 0));
     }
+  }
+  isNoMoreMoves(): boolean {
+    let res = true;
+    this.globalMap.counties.forEach(county => {
+      county.army.forEach(unit => {
+        if (unit.numberOfSteps > 0 && unit.side === this.currentPlayer) {
+          res = false;
+        }
+      });
+    });
+    return res;
   }
 }

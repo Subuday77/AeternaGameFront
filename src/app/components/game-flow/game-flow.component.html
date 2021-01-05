@@ -40,7 +40,6 @@
             </thead>
             <tbody>
                 <tr>
-
                     <td class=cName>
                         <select class="target" (change)="setTarget()" [(ngModel)]="countyId">  
                            <ng-container *ngFor="let county of globalMap.counties">                       
@@ -131,37 +130,36 @@
     <div class="oneLine">
         <div class="buttons">
             <button class="move" (click)="makeMove()">Go!</button>
-            <a *ngIf="isPanic" class="panic">Panic!</a>
+            <a *ngIf="isPanic" class="panic">Panic!</a><br>
+            <button class="move" id="changeSide" (click)="changeSide()">Change side</button>
         </div>
     </div>
     <div class="oneLine">
-        <div class="bottomTable" *ngIf="this.moveResults.length>0">
-            <table class="results">
-                <tbody>
-                    <tr *ngFor="let result of moveResults">
-                        <td *ngIf="result.numberOfUnits>0 && !result.isDoneOnMap"><input type="checkbox" [(ngModel)]="result.isDoneOnMap"></td>
-                        <td *ngIf="result.numberOfUnits>0 && result.isDoneOnMap" style="background-color: forestgreen;"><input type="checkbox" [(ngModel)]="result.isDoneOnMap"></td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none; font-family:'Aladin';">&nbsp; {{result.numberOfUnits}}</td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none;">{{result.unitType}}&nbsp; </td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none;"> unit(s) moved from</td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none;">&nbsp;{{result.ounboundCounty}}&nbsp; </td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none;">to</td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none;">&nbsp;{{result.inboundCounty}}</td>
-                    </tr>
-                    <tr *ngFor="let result of attackResults">
-                        <td *ngIf="result.numberOfUnits>0 && !result.isDoneOnMap"><input type="checkbox" [(ngModel)]="result.isDoneOnMap"></td>
-                        <td *ngIf="result.numberOfUnits>0 && result.isDoneOnMap" style="background-color: forestgreen;"><input type="checkbox" [(ngModel)]="result.isDoneOnMap"></td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none; font-family:'Aladin';">&nbsp; {{result.numberOfUnits}}</td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none;">{{result.unitType}}&nbsp; </td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none;"> unit(s) moved from</td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none;">&nbsp;{{result.ounboundCounty}}&nbsp; </td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none;">to</td>
-                        <td *ngIf="result.numberOfUnits>0" style="border:none;">&nbsp;{{result.inboundCounty}}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div style="position: absolute; left: 50%;">
+            <div class="bottomTable" *ngIf="this.moveResults.length>0 || this.deadResults.length>0">
+                <table class="results">
+                    <tbody>
+                        <tr *ngFor="let result of deadResults">
+                            <td *ngIf="result.numberOfUnits>0 && !result.isDoneOnMap" style="width: 10px;"><input type="checkbox" [(ngModel)]="result.isDoneOnMap"></td>
+                            <td *ngIf="result.numberOfUnits>0 && result.isDoneOnMap" style="background-color: forestgreen; width: 10px;"><input type="checkbox" [(ngModel)]="result.isDoneOnMap"></td>
+                            <td *ngIf="result.numberOfUnits>0" style="border:none; font-family:'Aladin'; text-align: center;">&nbsp;{{result.numberOfUnits}}</td>
+                            <td *ngIf="result.numberOfUnits>0" style="border:none; text-align: left;">{{result.unitType}} unit(s) died in {{result.ounboundCounty}} county</td>
+                        </tr>
+                        <tr *ngFor="let result of attackResults">
+                            <td *ngIf="result.numberOfUnits>0 && !result.isDoneOnMap" style="width: 10px;"><input type="checkbox" [(ngModel)]="result.isDoneOnMap"></td>
+                            <td *ngIf="result.numberOfUnits>0 && result.isDoneOnMap" style="background-color: forestgreen; width: 10px;"><input type="checkbox" [(ngModel)]="result.isDoneOnMap"></td>
+                            <td *ngIf="result.numberOfUnits>0" style="border:none; font-family:'Aladin'; text-align: center;">&nbsp;{{result.numberOfUnits}}</td>
+                            <td *ngIf="result.numberOfUnits>0" style="border:none; text-align: left;">{{result.unitType}} unit(s) moved from {{result.ounboundCounty}} to {{result.inboundCounty}}</td>
+                        </tr>
+                        <tr *ngFor="let result of moveResults">
+                            <td *ngIf="result.numberOfUnits>0 && !result.isDoneOnMap" style="width: 10px;"><input type="checkbox" [(ngModel)]="result.isDoneOnMap"></td>
+                            <td *ngIf="result.numberOfUnits>0 && result.isDoneOnMap" style="background-color: forestgreen; width: 10px;"><input type="checkbox" [(ngModel)]="result.isDoneOnMap"></td>
+                            <td *ngIf="result.numberOfUnits>0" style="border:none; font-family:'Aladin'; text-align: center;">&nbsp;{{result.numberOfUnits}}</td>
+                            <td *ngIf="result.numberOfUnits>0" style="border:none; text-align: left;">{{result.unitType}} unit(s) moved from {{result.ounboundCounty}} to {{result.inboundCounty}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-
-
 </body>
