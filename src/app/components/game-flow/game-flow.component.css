@@ -146,6 +146,49 @@ button:active {
     width: fit-content;
 }
 
+.panic {
+    background-color: rgb(0, 0, 0);
+    width: auto;
+    height: 50px;
+    border-radius: 10px;
+    font-family: 'Creepster';
+    font-size: 250%;
+    color: rgb(255, 0, 0);
+    outline: none;
+    margin-left: 10px;
+    padding: 5px 15px 5px 15px;
+}
+
+.results {
+    width: fit-content;
+    font-size: 150%;
+}
+
+
+/* .attackResults {
+    text-align: right;
+    
+    ;
+} */
+
 .move {
     margin-top: 15px;
+}
+
+.oneLine {
+    display: inline-block;
+}
+
+.buttons {
+    position: absolute;
+}
+
+.bottomTable {
+    position: absolute;
+    left: 20%;
+    border: 2px solid black;
+    border-radius: 5px;
+    background-color: sienna;
+    padding-left: 5px;
+    padding-right: 5px;
 }
