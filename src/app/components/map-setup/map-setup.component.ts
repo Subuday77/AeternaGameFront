@@ -50,7 +50,7 @@ export class MapSetupComponent implements OnInit {
       if (this.checkForEmptyCounties()) {
         this.dataTransfer.firstMove = this.firstMove;
         this.dataTransfer.fildState = this.globalMap;
-        console.log(this.dataTransfer.fildState);
+        //console.log(this.dataTransfer.fildState);
         this.router.navigate(['gameFlow'])
       }
     }
@@ -109,14 +109,14 @@ export class MapSetupComponent implements OnInit {
         break;
     }
 
-    console.log(county.army)
+    //console.log(county.army)
   }
 
   clrRow(county) {
     if (county.owner === "Neutral") {
 
       county.army.forEach(unit => {
-        console.log(unit.id)
+        //console.log(unit.id)
         this.releaseId(unit.id);
 
       });
@@ -127,7 +127,7 @@ export class MapSetupComponent implements OnInit {
 
     }
     //this.defineAvaliableUnits();
-    console.log(county)
+    //console.log(county)
   }
 
   releaseId(id: string) {
@@ -203,13 +203,13 @@ export class MapSetupComponent implements OnInit {
 
 
   check() {
-    console.log(this.globalMap.counties[0].isCastle)
-    console.log(this.globalMap.counties[0].owner)
-    console.log(this.globalMap.counties[0].army[0])
-    console.log(this.globalMap.counties[0].army[1])
-    console.log(this.globalMap.counties[0].neighbors)
-    console.log(this.globalMap.counties[1].neighbors)
-    console.log(this.globalMap.counties[0])
+    //console.log(this.globalMap.counties[0].isCastle)
+    // console.log(this.globalMap.counties[0].owner)
+    // console.log(this.globalMap.counties[0].army[0])
+    // console.log(this.globalMap.counties[0].army[1])
+    // console.log(this.globalMap.counties[0].neighbors)
+    // console.log(this.globalMap.counties[1].neighbors)
+    // console.log(this.globalMap.counties[0])
 
   }
 

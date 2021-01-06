@@ -93,8 +93,8 @@ export class GameFlowComponent implements OnInit {
       });
     });
     this.friendlyNeighbors.sort((a, b) => b.army.length - a.army.length);
-    console.log("this.friendlyNeighbors")
-    console.log(this.friendlyNeighbors)
+    // console.log("this.friendlyNeighbors")
+    // console.log(this.friendlyNeighbors)
   }
 
   makeMove() {
@@ -114,9 +114,7 @@ export class GameFlowComponent implements OnInit {
     }
     // console.log(this.globalMap.counties[0])
     // console.log(this.dataTransfer.fildState.counties[0])
-    if (this.isNoMoreMoves()) {
-      this.errorOutOfMoves();
-    }
+    
 
   }
 
@@ -319,10 +317,15 @@ export class GameFlowComponent implements OnInit {
       title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">Attacker won. Units were moved.</p>`,
       confirmButtonColor: '#5f9ea0',
       toast: true,
-      position: 'top',
+      //position: 'top',
       background: '#e6e6e6',
       confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
-
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (this.isNoMoreMoves()) {
+          this.errorOutOfMoves();
+        }
+      }
     });
   }
   defenderWin() {
@@ -330,10 +333,15 @@ export class GameFlowComponent implements OnInit {
       title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">Defender won. No units were moved.</p>`,
       confirmButtonColor: '#5f9ea0',
       toast: true,
-      position: 'top',
+      //position: 'top',
       background: '#e6e6e6',
       confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
-
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (this.isNoMoreMoves()) {
+          this.errorOutOfMoves();
+        }
+      }
     });
   }
 
@@ -369,7 +377,7 @@ export class GameFlowComponent implements OnInit {
       unit.numberOfSteps--;
     });
 
-    console.log(this.neighbors)
+    // console.log(this.neighbors)
     this.moveArmyInsert(unitsToMove);
   }
 
@@ -390,6 +398,9 @@ export class GameFlowComponent implements OnInit {
       this.targetCounty.army.push(unit);
     });
     this.sortCounty(this.targetCounty);
+    if (this.isNoMoreMoves()) {
+      this.errorOutOfMoves();
+    }
   }
 
   attackEnemyExtract() {
@@ -400,8 +411,8 @@ export class GameFlowComponent implements OnInit {
         this.runAway();
         this.moveArmyExtract();
         this.attackerWin();
-        console.log(this.targetCounty);
-        console.log(this.friendlyNeighbors);
+        // console.log(this.targetCounty);
+        // console.log(this.friendlyNeighbors);
       } else {
         this.neighbors.forEach(county => {
           county.army.forEach(unit => {
@@ -437,7 +448,7 @@ export class GameFlowComponent implements OnInit {
           break;
         case "Infantry":
           infantry.push(unit)
-          console.log(unit)
+          // console.log(unit)
           infantry.sort((a, b) => Number(b.hp) - Number(a.hp));
           break;
         default:
@@ -479,12 +490,12 @@ export class GameFlowComponent implements OnInit {
       });
     }
     this.retreatedUnits;
-    console.log("this.retreatedUnits")
-    console.log(this.retreatedUnits)
+    // console.log("this.retreatedUnits")
+    // console.log(this.retreatedUnits)
     this.friendlyNeighbors.forEach(county => {
       var freeSpace = 12 - county.army.length;
-      console.log("unitsToMove");
-      console.log(unitsToMove);
+      // console.log("unitsToMove");
+      // console.log(unitsToMove);
       while (freeSpace > 0 && unitsToMove.length > 0) {
         county.army.push(unitsToMove[0]);
         unitsToMove[0].currentCounty = county.id;
@@ -512,15 +523,14 @@ export class GameFlowComponent implements OnInit {
       this.targetCounty.owner = "Neutral";
     }
     this.recordAttackResults();
-    console.log("this.retreatedUnits")
-    console.log(this.retreatedUnits)
+    // console.log("this.retreatedUnits")
+    // console.log(this.retreatedUnits)
   }
 
   attackerWon(): boolean {
-
-    console.log(this.countDefenderStrength());
-    console.log(this.countAttackerStrengh());
-    console.log(this.countAttackerStrengh() > this.countDefenderStrength());
+    // console.log(this.countDefenderStrength());
+    // console.log(this.countAttackerStrengh());
+    // console.log(this.countAttackerStrengh() > this.countDefenderStrength());
     this.isPanic = false;
     if (this.countAttackerStrengh() / this.countDefenderStrength() >= 2) {
       this.isPanic = true;
@@ -564,7 +574,11 @@ export class GameFlowComponent implements OnInit {
     }
     if (this.targetCounty.isCastle) {
       defenderStrength = defenderStrength + 40;
+        if(this.targetCounty.id==="B3"){
+          defenderStrength = defenderStrength + 60;
+        }
     }
+
     return defenderStrength;
   }
   causeDamage() {
@@ -609,7 +623,7 @@ export class GameFlowComponent implements OnInit {
     this.targetCounty.army.forEach(unit => {
       this.deadUnit(this.targetCounty, unit);
     });
-    console.log(this.cemetery);
+    // console.log(this.cemetery);
   }
 
   deadUnit(county, unit) {
@@ -639,8 +653,8 @@ export class GameFlowComponent implements OnInit {
     });
     var mySet = new Set(countyList);
     countyList = [...mySet];
-    console.log("resultCounties")
-    console.log(countyList)
+    // console.log("resultCounties")
+    // console.log(countyList)
     countyList.forEach(countyName => {
       var artilleryCount = 0;
       var cavalryCount = 0;
@@ -743,8 +757,8 @@ export class GameFlowComponent implements OnInit {
       this.deadResults.push(new MoveResult(cavalryCount, "Cavalry", countyName, countyName));
       this.deadResults.push(new MoveResult(infantryCount, "Infantry", countyName, countyName));
     });
-    console.log("this.deadResults")
-    console.log(this.deadResults)
+    // console.log("this.deadResults")
+    // console.log(this.deadResults)
   }
   changeSide() {
 
