@@ -27,14 +27,17 @@ export class MapSetupComponent implements OnInit {
   previousValue = "";
   previousUnitType = "";
   firstMove: string;
+  isOldGame: boolean;
 
   constructor(private dataTransfer: BackUpAndDataTransferService, private router: Router) { }
 
   ngOnInit(): void {
     this.prepareUnitsLists();
     this.globalMap.mapSetup();
-    this.globalMap.counties.sort((a,b) => a.id.localeCompare(b.id));
+    this.globalMap.counties.sort((a, b) => a.id.localeCompare(b.id));
+    this.createSaveFile();
   }
+
   submit() {
     if (this.firstMove === undefined) {
       Swal.fire({
@@ -51,6 +54,7 @@ export class MapSetupComponent implements OnInit {
         this.dataTransfer.firstMove = this.firstMove;
         this.dataTransfer.fildState = this.globalMap;
         //console.log(this.dataTransfer.fildState);
+        this.recordState();
         this.router.navigate(['gameFlow'])
       }
     }
@@ -200,6 +204,60 @@ export class MapSetupComponent implements OnInit {
     });
 
   }
+  oldGameExists() {
+    Swal.fire({
+      title: `<p style="font-family:'Aladin';color:cadetblue;">The previous game was found. Do you want to continue it?</p>`,
+      showDenyButton: true,
+      denyButtonColor: '#5f9ea0',
+      confirmButtonColor: '#5f9ea0',
+      background: '#e6e6e6',
+      confirmButtonText: `<p style="font-family:'Ewert';">Yes</p>`,
+      denyButtonText: `<p style="font-family:'Ewert';">No</p>`,
+
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.dataTransfer.getLastLine().subscribe((result) => {
+          this.firstMove = result.turn;
+          this.globalMap = result.globalMap;
+          this.dataTransfer.fildState = result.globalMap;
+          this.dataTransfer.stepNumber = result.stepNumber;
+          this.dataTransfer.firstMove = result.turn;
+        });
+      } 
+      if(result.isDenied) {
+        
+        this.dataTransfer.startNewGame().subscribe(() => {
+        });
+      }
+    });
+  }
+
+  createSaveFile() {
+
+    this.dataTransfer.createSaveFile().subscribe((result) => {
+      var res = result;
+      if (!res) {
+        this.checkForOldGame();
+      }
+    });
+  }
+
+  checkForOldGame() {
+    this.dataTransfer.checkForOldGame().subscribe((result) => {
+      var res = result;
+      if (res) {
+        this.oldGameExists();
+      }
+    });
+
+  }
+
+  recordState() {
+    this.dataTransfer.saveState().subscribe(() => {
+    });
+  }
+
+
 
 
   check() {

@@ -4,24 +4,6 @@ h1 {
     cursor: context-menu;
 }
 
-h2 {
-    font-family: 'Rye';
-    cursor: context-menu;
-}
-
-.mapLink {
-    text-align: right;
-    margin-top: -4%;
-    font-family: 'Aladin';
-    font-size: 200%;
-    margin-bottom: 10px;
-    padding-right: 10px;
-}
-
-.link:active {
-    color: white;
-}
-
 thead {
     text-align: left;
 }
@@ -74,11 +56,11 @@ select:focus {
 button {
     background-color: rgb(95, 158, 160);
     padding: 0px 20px 0px 20px;
-    width: auto;
+    width: 150px;
     height: 90px;
     border-radius: 10px;
     font-family: 'Ewert';
-    font-size: 250%;
+    font-size: 200%;
     color: white;
     outline: none;
 }
@@ -99,19 +81,9 @@ button:active {
     padding: 5px 15px 5px 15px;
     font-family: 'Architects Daughter';
     font-size: 115%;
-    width: 120px;
+    width: 125px;
     text-align: left;
     word-break: normal;
-}
-
-.target {
-    padding: 5px 15px 5px 15px;
-    font-family: 'Architects Daughter';
-    font-size: 130%;
-    width: 120px;
-    text-align: left;
-    border: none;
-    background-color: burlywood;
 }
 
 #cName {
@@ -136,77 +108,43 @@ button:active {
     font-size: 170%;
 }
 
-.targetSelect,
-.neihgbors {
-    border: 2px solid black;
-    margin-top: 30px;
-    border-radius: 5px;
-    background-color: burlywood;
-    padding-bottom: 2px;
-    width: fit-content;
+.text1 {
+    width: 90%;
+    font-family: 'Marck Script';
+    font-size: 200%;
 }
 
-.panic {
-    background-color: rgb(0, 0, 0);
-    width: auto;
-    height: 50px;
-    border-radius: 10px;
-    font-family: 'Creepster';
-    font-size: 250%;
-    color: rgb(255, 0, 0);
-    outline: none;
-    margin-left: 10px;
-    padding: 5px 15px 5px 15px;
+#print {
+    margin-top: 10px;
+    margin-right: 10px;
 }
 
-.results {
-    width: 100%;
-    font-size: 150%;
-    text-align: left;
-}
-
-
-/* .attackResults {
-    text-align: right;
-    
-    ;
-} */
-
-.move {
-    margin-top: 15px;
+@media print {
+    #text {
+        font-family: 'Marck Script';
+    }
 }
 
 .oneLine {
     display: inline-block;
 }
 
-.buttons {
-    position: absolute;
+#firstMove {
+    margin-left: 30px;
+    font-family: 'Aladin';
+    font-size: 150%;
 }
 
-.selectAll {
-    font-size: 60%;
-    padding: 1px 1px 1px 1px;
-    height: auto;
-    font-family: 'Architects Daughter';
-    width: 90px;
-}
-
-.bottomTable {
-    width: 30%;
-    min-width: 550px;
-    position: relative;
-    left: -50%;
-    border: 2px solid black;
-    border-radius: 5px;
-    background-color: sienna;
-    padding-left: 5px;
-    padding-right: 5px;
-    text-align: left;
-}
-
-#changeSide,
-#getReport {
+.mapLink {
+    text-align: right;
+    margin-top: -3.5%;
+    font-family: 'Aladin';
     font-size: 200%;
-    width: 300px;
+    margin-bottom: 10px;
+    padding-right: 10px;
+}
+
+#rollback {
+    width: auto;
+    margin-left: 9px;
 }

@@ -1,0 +1,108 @@
+<head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rye|Aladin|Lora|Roboto+Mono|Ewert|Marck+Script|Architects+Daughter">
+
+</head>
+
+<body>
+    <div id="report">
+        <h1 class="oneLine" id="text">
+            Red counties:
+        </h1>
+        <div class="oneLine" id="firstMove">
+            <a>Active side: {{currentPlayer}}&nbsp;&nbsp;&nbsp;Order number: {{stepNumber}}</a>
+        </div>
+        <div class="mapLink">
+            <a class=link href="https://drive.google.com/file/d/1lWxZBVZpe8rgA4oBnVlBszL0B3zIhJzx/view?usp=sharing" target="_blank">View the map</a>
+        </div>
+        <table>
+            <thead>
+                <col>
+                <colgroup span="12"></colgroup>
+                <tr>
+                    <th rowspan="2" class="theadr" id="cName">County Name</th>
+                    <th rowspan="2" class="theadr" id="cName">Owner</th>
+                    <th rowspan="2" class="theadr" id="cName">Castle</th>
+                    <th colspan="12" scope="colgroup" class="theadr">Army</th>
+                </tr>
+                <tr>
+                    <th scope="col">Unit 1</th>
+                    <th scope="col">Unit 2</th>
+                    <th scope="col">Unit 3</th>
+                    <th scope="col">Unit 4</th>
+                    <th scope="col">Unit 5</th>
+                    <th scope="col">Unit 6</th>
+                    <th scope="col">Unit 7</th>
+                    <th scope="col">Unit 8</th>
+                    <th scope="col">Unit 9</th>
+                    <th scope="col">Unit 10</th>
+                    <th scope="col">Unit 11</th>
+                    <th scope="col">Unit 12</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let county of globalMap.counties">
+                    <ng-container *ngIf="county.owner==='Red'">
+                        <td style="background-color: crimson;" class="cName">{{county.id}}</td>
+                        <td class="cName">{{county.owner}}</td>
+                        <td *ngIf="!county.isCastle" style="min-width: 80px;">No</td>
+                        <td *ngIf="county.isCastle" style="background-color: darkolivegreen; min-width: 80px;">Yes</td>
+                        <ng-container *ngFor="let unit of county.army; let i=index">
+                            <td class="unit">{{unit.name}} {{unit.hp}}</td>
+                        </ng-container>
+                    </ng-container>
+                </tr>
+            </tbody>
+        </table>
+        <h1 id="text">
+            Blue counties:
+        </h1>
+        <table>
+            <thead>
+                <col>
+                <colgroup span="12"></colgroup>
+                <tr>
+                    <th rowspan="2" class="theadr" id="cName">County Name</th>
+                    <th rowspan="2" class="theadr" id="cName">Owner</th>
+                    <th rowspan="2" class="theadr" id="cName">Castle</th>
+                    <th colspan="12" scope="colgroup" class="theadr">Army</th>
+                </tr>
+                <tr>
+                    <th scope="col">Unit 1</th>
+                    <th scope="col">Unit 2</th>
+                    <th scope="col">Unit 3</th>
+                    <th scope="col">Unit 4</th>
+                    <th scope="col">Unit 5</th>
+                    <th scope="col">Unit 6</th>
+                    <th scope="col">Unit 7</th>
+                    <th scope="col">Unit 8</th>
+                    <th scope="col">Unit 9</th>
+                    <th scope="col">Unit 10</th>
+                    <th scope="col">Unit 11</th>
+                    <th scope="col">Unit 12</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let county of globalMap.counties">
+                    <ng-container *ngIf="county.owner==='Blue'">
+                        <td style="background-color: aqua;" class="cName">{{county.id}}</td>
+                        <td class="cName">{{county.owner}}</td>
+                        <td *ngIf="!county.isCastle" style="min-width: 80px;">No</td>
+                        <td *ngIf="county.isCastle" style="background-color: darkolivegreen; min-width: 80px;">Yes</td>
+                        <ng-container *ngFor="let unit of county.army; let i=index">
+                            <td class="unit">{{unit.name}} {{unit.hp}}</td>
+                        </ng-container>
+                    </ng-container>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="buttons">
+        <button class="move" id="print" (click)="print()">Print</button>
+        <button class="move" id="back" (click)="goBack()">Back</button>
+        <button class="move" id="rollback" (click)="rollback()">Rollback</button>
+        <!-- <button class="move" id="rollback" (click)="notReadyYet()">Rollback</button> -->
+    </div>
+</body>

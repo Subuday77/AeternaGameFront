@@ -114,7 +114,8 @@
             <tbody>
                 <tr *ngFor="let county of neighbors">
                     <td class="cName">
-                        {{county.id}}
+                        <button class="selectAll" (click)="selectAllUse(county)">All use</button><br>{{county.id}}
+                        <button class="selectAll" id="selectAllSupport" (click)="selectAllSupport(county)" *ngIf="targetCounty.owner!=currentPlayer && targetCounty.owner!='Neutral'">All support</button>
                     </td>
                     <td *ngFor="let unit of county.army" class="attUnit">
                         <label style="font-size: smaller;" *ngIf="unit.numberOfSteps>0"><input type="checkbox" (click)=unselectSupport(unit) [(ngModel)]="unit.isInUse" *ngIf="unit.numberOfSteps>0">Use</label><br *ngIf="targetCounty.owner!=currentPlayer && targetCounty.owner!='Neutral' && unit.name!='None' && unit.numberOfSteps>0">
@@ -131,7 +132,8 @@
         <div class="buttons">
             <button class="move" (click)="makeMove()">Go!</button>
             <a *ngIf="isPanic" class="panic">Panic!</a><br>
-            <button class="move" id="changeSide" (click)="changeSide()">Change side</button>
+            <button class="move" id="changeSide" (click)="changeSide()">Change side</button><br>
+            <button class="move" id="getReport" (click)="getReport()">Get Report</button>
         </div>
     </div>
     <div class="oneLine">

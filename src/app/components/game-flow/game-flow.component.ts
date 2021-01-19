@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./game-flow.component.css']
 })
 export class GameFlowComponent implements OnInit {
+  //isTrue: boolean;
   currentPlayer: string;
   globalMap: GlobalMap = {} as GlobalMap;
   countyId;
@@ -35,10 +36,16 @@ export class GameFlowComponent implements OnInit {
     }
     this.globalMap = this.dataTransfer.fildState;
     this.currentPlayer = this.dataTransfer.firstMove;
-    //console.log(this.globalMap)
+    this.sortAllCounties();
+    console.log(this.globalMap)
+    if (this.isNoMoreMoves()) {
+      this.errorOutOfMoves();
+    }
+    this.defineWinner();
     //this.setTargetOwner(this.targetCounty);
-    //console.log(this.targetCounty);
-
+    // console.log(this.cemetery);
+    // this.resurrection();
+    // console.log(this.cemetery);
   }
   setTarget() {
     this.isPanic = false;
@@ -111,10 +118,13 @@ export class GameFlowComponent implements OnInit {
       } else {
         this.attackEnemyExtract();
       }
+      this.dataTransfer.stepNumber++;
+      this.recordState();
+      this.defineWinner();
     }
     // console.log(this.globalMap.counties[0])
     // console.log(this.dataTransfer.fildState.counties[0])
-    
+
 
   }
 
@@ -225,7 +235,20 @@ export class GameFlowComponent implements OnInit {
     }
     return isNotOnlySupport;
   }
-
+  checkForWin(): number {    
+    let red = this.globalMap.counties.some(county => county.owner==="Red");
+    let blue = this.globalMap.counties.some(county => county.owner==="Blue");
+    if(!red&&!blue){
+      return 1;
+    }
+    if(!red) {
+      return 2;
+    }
+    if(!blue){
+      return 3;
+    }
+    return 0;
+  }
 
 
   errorEmptyAttack() {
@@ -344,6 +367,46 @@ export class GameFlowComponent implements OnInit {
       }
     });
   }
+errorPlayerWon(colorWin:string, colorLose:string){
+  Swal.fire({
+    title: `<p style="font-family:'Aladin';color:cadetblue;">`+colorWin+` player won. `+colorLose+` player has no more live units. Do you want to start a new game?</p>`,
+    showCancelButton: true,
+    position:'top',
+    cancelButtonColor: '#5f9ea0',
+    confirmButtonColor: '#5f9ea0',
+    background: '#e6e6e6',
+    confirmButtonText: `<p style="font-family:'Ewert';">Yes</p>`,
+    cancelButtonText: `<p style="font-family:'Ewert';">No</p>`,
+
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.dataTransfer.startNewGame().subscribe(() => {
+      });
+      this.router.navigate(['map-setup']);
+    } 
+    
+  });
+}
+errorPlayerTie(){
+  Swal.fire({
+    title: `<p style="font-family:'Aladin';color:cadetblue;">No more live units on the field. Do you want to start a new game?</p>`,
+    showCancelButton: true,
+    position:'top',
+    cancelButtonColor: '#5f9ea0',
+    confirmButtonColor: '#5f9ea0',
+    background: '#e6e6e6',
+    confirmButtonText: `<p style="font-family:'Ewert';">Yes</p>`,
+    cancelButtonText: `<p style="font-family:'Ewert';">No</p>`,
+
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.dataTransfer.startNewGame().subscribe(() => {
+      });
+      this.router.navigate(['map-setup']);
+    } 
+    
+  });
+}
 
 
   moveArmyExtract() {
@@ -528,9 +591,7 @@ export class GameFlowComponent implements OnInit {
   }
 
   attackerWon(): boolean {
-    // console.log(this.countDefenderStrength());
-    // console.log(this.countAttackerStrengh());
-    // console.log(this.countAttackerStrengh() > this.countDefenderStrength());
+
     this.isPanic = false;
     if (this.countAttackerStrengh() / this.countDefenderStrength() >= 2) {
       this.isPanic = true;
@@ -542,15 +603,12 @@ export class GameFlowComponent implements OnInit {
     let attackerStrength = 0;
     this.neighbors.forEach(county => {
       county.army.forEach(unit => {
-        if (unit.isInUse && (!unit.isSupport)) {
-          attackerStrength = attackerStrength + unit.damage;
-        }
-        else if (unit.isInUse && unit.isSupport) {
-          attackerStrength = attackerStrength + unit.damage * 0.5;
+        if (unit.isInUse) {
+          attackerStrength += unit.isSupport ? unit.damage * 0.5 : unit.damage;
         }
       });
     });
-    return attackerStrength;
+    return this.targetCounty.isCastle ? attackerStrength - (attackerStrength * 0.3) : attackerStrength;
   }
   countDefenderStrength(): number {
     let defenderStrength = 0;
@@ -574,9 +632,9 @@ export class GameFlowComponent implements OnInit {
     }
     if (this.targetCounty.isCastle) {
       defenderStrength = defenderStrength + 40;
-        if(this.targetCounty.id==="B3"){
-          defenderStrength = defenderStrength + 60;
-        }
+      if (this.targetCounty.id === "B3") {
+        defenderStrength = defenderStrength + 60;
+      }
     }
 
     return defenderStrength;
@@ -588,11 +646,11 @@ export class GameFlowComponent implements OnInit {
     });
     this.targetCounty.army.forEach(unit => {
       if (unit.name != "None") {
-        if (this.targetCounty.isCastle) {
-          unit.hp = Math.floor(unit.hp - ((this.countAttackerStrengh() / realUnits.length) - (this.countAttackerStrengh() / realUnits.length) * 0.3));
-        } else {
-          unit.hp = Math.floor(unit.hp - this.countAttackerStrengh() / realUnits.length);
-        }
+        // if (this.targetCounty.isCastle) {
+        //   unit.hp = Math.floor(unit.hp - ((this.countAttackerStrengh() / realUnits.length) - (this.countAttackerStrengh() / realUnits.length) * 0.3));
+        // } else {
+        unit.hp = Math.floor(unit.hp - this.countAttackerStrengh() / realUnits.length);
+        // }
       }
     });
     realUnits = [];
@@ -611,6 +669,9 @@ export class GameFlowComponent implements OnInit {
         }
       });
     });
+    console.log(this.countDefenderStrength());
+    console.log(this.countAttackerStrengh());
+    console.log(this.countAttackerStrengh() > this.countDefenderStrength());
   }
   searchForDeadUnits() {
     this.newDeadUnits = [];
@@ -637,9 +698,10 @@ export class GameFlowComponent implements OnInit {
     county.army = county.army.filter(function (unit) {
       return (unit.name != "Dead");
     })
-    for (var i = county.army.length; i < 12; i++) {
-      county.army.push(new Unit("None", "None", "None", 0, 0));
-    }
+    // for (var i = county.army.length; i < 12; i++) {
+    //   county.army.push(new Unit("None", "None", "None", 0, 0));
+    // }
+    this.addEmptyUnits(county);
     if (this.checkIfEmpty(county)) {
       county.owner = "Neutral";
     }
@@ -816,8 +878,31 @@ export class GameFlowComponent implements OnInit {
       this.router.navigate(['swapSide'])
     }
   }
+  selectAllUse(county) {
+    let isTrue = county.army.some(unit => unit.isInUse);
+    county.army.forEach(unit => {
+      if (unit.numberOfSteps > 0) {
+        unit.isInUse = !isTrue;
+        if (!unit.isInUse) unit.isSupport = false;
+      }
+    });
+  }
 
+  selectAllSupport(county) {
+    let isTrue = county.army.some(unit => unit.isSupport);
+    county.army.forEach(unit => {
+      if (unit.numberOfSteps > 0) {
+        unit.isSupport = !isTrue;
+        if (unit.isSupport) unit.isInUse = true;
+      }
+    });
+  }
 
+  sortAllCounties() {
+    this.globalMap.counties.forEach(county => {
+      this.sortCounty(county);
+    });
+  }
   selectUse(unit) {
     if (!unit.isSupport) {
       unit.isInUse = true;
@@ -854,5 +939,50 @@ export class GameFlowComponent implements OnInit {
       });
     });
     return res;
+  }
+  // resurrection() {
+  //   let index = this.cemetery.length - 1;
+  //   while (index >= 0) {
+  //     this.globalMap.counties.forEach(county => {
+  //       let zombie = county.army.some(unit => unit.id === this.cemetery[index].id)
+  //       if (zombie) {
+  //         this.cemetery.splice(index, 1);
+  //       }
+  //     });
+  //     index--;
+  //   }
+  // }
+  defineWinner(){
+    if (this.checkForWin()>0){
+      switch (this.checkForWin()) {
+        case 1:
+          this.errorPlayerTie();
+          break;
+          case 2:
+          this.errorPlayerWon("Blue","Red");
+          break;
+          case 3:
+            this.errorPlayerWon("Red","Blue");
+          break;
+      
+        default:
+          break;
+      }
+    }
+  }
+
+  getReport() {
+    this.globalMap.counties.forEach(county => {
+      county.army.forEach(unit => {
+        unit.isInUse = false;
+        unit.isSupport = false;
+      });
+    });
+    this.router.navigate(['report'])
+  }
+  recordState() {
+    this.dataTransfer.saveState().subscribe(() => {
+
+    });
   }
 }
