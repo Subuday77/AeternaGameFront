@@ -1,12 +1,14 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { Artillery } from 'src/app/models/artillery';
 import { Cavalry } from 'src/app/models/cavalry';
 import { GlobalMap } from 'src/app/models/global-map';
 import { Infantry } from 'src/app/models/infantry';
 import { Unit } from 'src/app/models/unit';
 import { BackUpAndDataTransferService } from 'src/app/services/back-up-and-data-transfer.service';
+
 import Swal from 'sweetalert2';
 
 @Component({
@@ -29,9 +31,10 @@ export class MapSetupComponent implements OnInit {
   firstMove: string;
   isOldGame: boolean;
 
-  constructor(private dataTransfer: BackUpAndDataTransferService, private router: Router) { }
+  constructor(private dataTransfer: BackUpAndDataTransferService, private router: Router, private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
+    this.connectionCheck();
     this.prepareUnitsLists();
     this.globalMap.mapSetup();
     this.globalMap.counties.sort((a, b) => a.id.localeCompare(b.id));
@@ -216,26 +219,29 @@ export class MapSetupComponent implements OnInit {
 
     }).then((result) => {
       if (result.isConfirmed) {
+        this.spinner.show();
         this.dataTransfer.getLastLine().subscribe((result) => {
           this.firstMove = result.turn;
           this.globalMap = result.globalMap;
           this.dataTransfer.fildState = result.globalMap;
           this.dataTransfer.stepNumber = result.stepNumber;
           this.dataTransfer.firstMove = result.turn;
+          this.spinner.hide();
         });
-      } 
-      if(result.isDenied) {
-        
+      }
+      if (result.isDenied) {
+        this.spinner.show();
         this.dataTransfer.startNewGame().subscribe(() => {
+          this.spinner.hide();
         });
       }
     });
   }
 
   createSaveFile() {
-
     this.dataTransfer.createSaveFile().subscribe((result) => {
       var res = result;
+
       if (!res) {
         this.checkForOldGame();
       }
@@ -244,7 +250,9 @@ export class MapSetupComponent implements OnInit {
 
   checkForOldGame() {
     this.dataTransfer.checkForOldGame().subscribe((result) => {
+
       var res = result;
+
       if (res) {
         this.oldGameExists();
       }
@@ -257,7 +265,31 @@ export class MapSetupComponent implements OnInit {
     });
   }
 
+  connectionCheck() {
+    this.spinner.show();
+    this.dataTransfer.connectionCheck().subscribe(() => {
+      this.spinner.hide();
+    }, (error) => {
+      if (!error.ok) {
+        this.spinner.hide();
+        this.errorLocalServerNotFound();
+      }
+    });
+    //this.spinner.hide();
+  }
 
+  errorLocalServerNotFound() {
+    Swal.fire({
+      title: `<p style="font-family:'Aladin';color:cadetblue; font-size:150%">Local server not found!</p>`,
+      html: `<p style="font-family:'Aladin';color:cadetblue; font-size:200%">Please start it and perss OK button.</p></p>`,
+      confirmButtonColor: '#5f9ea0',
+      background: '#e6e6e6',
+      confirmButtonText: `<p style="font-family:'Ewert';">OK</p>`,
+      allowOutsideClick: false,
+    }).then(() => {
+      this.connectionCheck();
+    });
+  }
 
 
   check() {

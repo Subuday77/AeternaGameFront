@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BackUpAndDataTransferService } from 'src/app/services/back-up-and-data-transfer.service';
 import Swal from 'sweetalert2';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-report',
@@ -13,7 +14,7 @@ export class ReportComponent implements OnInit {
   globalMap: GlobalMap = {} as GlobalMap;
   currentPlayer: string;
   stepNumber: number;
-  constructor(private dataTransfer: BackUpAndDataTransferService, private router: Router) { }
+  constructor(private dataTransfer: BackUpAndDataTransferService, private router: Router, private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
     if (this.dataTransfer.fildState === undefined) {
@@ -50,6 +51,7 @@ export class ReportComponent implements OnInit {
     WindowPrt.close();
   }
   rollback(){
+    this.spinner.show();
     this.dataTransfer.rollback().subscribe((result)=> {
       this.currentPlayer = result.turn;
       this.stepNumber = result.stepNumber;
@@ -57,6 +59,7 @@ export class ReportComponent implements OnInit {
       this.dataTransfer.fildState = result.globalMap;
       this.dataTransfer.stepNumber = result.stepNumber;
       this.dataTransfer.firstMove = result.turn;
+      this.spinner.hide();
     });
     if (this.stepNumber===0){
       this.errorNoMoreRollbacks();
