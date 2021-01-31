@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { County } from 'src/app/models/county';
 import { GlobalMap } from 'src/app/models/global-map';
 import { MoveResult } from 'src/app/models/move-result';
@@ -28,7 +29,7 @@ export class GameFlowComponent implements OnInit {
   friendlyNeighbors = [];
   isPanic = false;
   cemetery = [];
-  constructor(private dataTransfer: BackUpAndDataTransferService, private router: Router) { }
+  constructor(private dataTransfer: BackUpAndDataTransferService, private router: Router, private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
     if (this.dataTransfer.fildState === undefined) {
@@ -104,7 +105,8 @@ export class GameFlowComponent implements OnInit {
     // console.log(this.friendlyNeighbors)
   }
 
-  makeMove() {
+  async makeMove() {
+    if (await this.connectionCheck()) {
     this.moveResults = [];
     this.attackResults = [];
     this.deadResults = [];
@@ -122,6 +124,7 @@ export class GameFlowComponent implements OnInit {
       this.recordState();
       this.defineWinner();
     }
+  }
     // console.log(this.globalMap.counties[0])
     // console.log(this.dataTransfer.fildState.counties[0])
 
@@ -971,7 +974,8 @@ errorPlayerTie(){
     }
   }
 
-  getReport() {
+  async getReport() {
+    if (await this.connectionCheck()) {
     this.globalMap.counties.forEach(county => {
       county.army.forEach(unit => {
         unit.isInUse = false;
@@ -980,9 +984,41 @@ errorPlayerTie(){
     });
     this.router.navigate(['report'])
   }
+}
+
   recordState() {
     this.dataTransfer.saveState().subscribe(() => {
 
     });
   }
+
+  async connectionCheck(): Promise<boolean> {
+    this.spinner.show();
+    const observable = this.dataTransfer.connectionCheck();
+    observable.subscribe(() => { 
+    // await this.createSaveFile();     
+      this.spinner.hide();
+    }, (error) => {      
+      if (!error.ok) {
+        this.spinner.hide();
+        this.errorLocalServerNotFound();
+      }
+    });   
+    return observable.toPromise();
+    //this.spinner.hide();   
+  }
+
+  errorLocalServerNotFound() {
+    Swal.fire({
+      title: `<p style="font-family:'Aladin';color:cadetblue; font-size:150%">Local server not found!</p>`,
+      html: `<p style="font-family:'Aladin';color:cadetblue; font-size:200%">Please start it and perss OK button.</p></p>`,
+      confirmButtonColor: '#5f9ea0',
+      background: '#e6e6e6',
+      confirmButtonText: `<p style="font-family:'Ewert';">OK</p>`,
+      allowOutsideClick: false,
+    }).then(() => {
+      this.connectionCheck();
+    });
+  }
+
 }

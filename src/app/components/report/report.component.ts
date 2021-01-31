@@ -21,8 +21,8 @@ export class ReportComponent implements OnInit {
       this.router.navigate(['']);
     }
     this.globalMap = this.dataTransfer.fildState;
-    this.currentPlayer = this.dataTransfer.firstMove;
-    this.stepNumber = this.dataTransfer.stepNumber;
+     this.currentPlayer = this.dataTransfer.firstMove;
+     this.stepNumber = this.dataTransfer.stepNumber;
   }
   goBack() {
     this.router.navigate(['gameFlow']);
@@ -42,7 +42,7 @@ export class ReportComponent implements OnInit {
     // );
     // popupWin.document.close();
     // ========================================================================
-        const printContent = document.getElementById("report");
+    const printContent = document.getElementById("report");
     const WindowPrt = window.open('', '', 'left=0,top=0,width=900,height=900,toolbar=0,scrollbars=0,status=0');
     WindowPrt.document.write(printContent.innerHTML);
     WindowPrt.document.close();
@@ -50,22 +50,24 @@ export class ReportComponent implements OnInit {
     WindowPrt.print();
     WindowPrt.close();
   }
-  rollback(){
-    this.spinner.show();
-    this.dataTransfer.rollback().subscribe((result)=> {
-      this.currentPlayer = result.turn;
-      this.stepNumber = result.stepNumber;
-      this.globalMap = result.globalMap;
-      this.dataTransfer.fildState = result.globalMap;
-      this.dataTransfer.stepNumber = result.stepNumber;
-      this.dataTransfer.firstMove = result.turn;
-      this.spinner.hide();
-    });
-    if (this.stepNumber===0){
-      this.errorNoMoreRollbacks();
+  async rollback() {
+    if (await this.connectionCheck()) {
+      this.spinner.show();
+      this.dataTransfer.rollback().subscribe((result) => {
+        this.currentPlayer = result.turn;
+        this.stepNumber = result.stepNumber;
+        this.globalMap = result.globalMap;
+        this.dataTransfer.fildState = result.globalMap;
+        this.dataTransfer.stepNumber = result.stepNumber;
+        this.dataTransfer.firstMove = result.turn;
+        this.spinner.hide();
+      });
+      if (this.stepNumber === 0) {
+        this.errorNoMoreRollbacks();
+      }
     }
   }
-  errorNoMoreRollbacks(){
+  errorNoMoreRollbacks() {
     Swal.fire({
       title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">You have reached the initial field state.</p>`,
       confirmButtonColor: '#5f9ea0',
@@ -76,14 +78,32 @@ export class ReportComponent implements OnInit {
 
     });
   }
-  notReadyYet(){
-    Swal.fire({
-      title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">This functionality will be added in the further versions.</p>`,
-      confirmButtonColor: '#5f9ea0',
-      toast: true,
-      background: '#e6e6e6',
-      confirmButtonText: `<p style="font-family:'Ewert'; font-size: 150%">OK</p>`
+  async connectionCheck(): Promise<boolean> {
+    this.spinner.show();
+    const observable = this.dataTransfer.connectionCheck();
+    observable.subscribe(() => {
+      // await this.createSaveFile();     
+      this.spinner.hide();
+    }, (error) => {
+      if (!error.ok) {
+        this.spinner.hide();
+        this.errorLocalServerNotFound();
+      }
+    });
+    return observable.toPromise();
+    //this.spinner.hide();   
+  }
 
+  errorLocalServerNotFound() {
+    Swal.fire({
+      title: `<p style="font-family:'Aladin';color:cadetblue; font-size:150%">Local server not found!</p>`,
+      html: `<p style="font-family:'Aladin';color:cadetblue; font-size:200%">Please start it and perss OK button.</p></p>`,
+      confirmButtonColor: '#5f9ea0',
+      background: '#e6e6e6',
+      confirmButtonText: `<p style="font-family:'Ewert';">OK</p>`,
+      allowOutsideClick: false,
+    }).then(() => {
+      this.connectionCheck();
     });
   }
 }

@@ -1,7 +1,9 @@
 
+
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { observable } from 'rxjs';
 import { Artillery } from 'src/app/models/artillery';
 import { Cavalry } from 'src/app/models/cavalry';
 import { GlobalMap } from 'src/app/models/global-map';
@@ -31,17 +33,19 @@ export class MapSetupComponent implements OnInit {
   firstMove: string;
   isOldGame: boolean;
 
+
   constructor(private dataTransfer: BackUpAndDataTransferService, private router: Router, private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
-    this.connectionCheck();
+
     this.prepareUnitsLists();
     this.globalMap.mapSetup();
     this.globalMap.counties.sort((a, b) => a.id.localeCompare(b.id));
+    this.connectionCheck();
     this.createSaveFile();
   }
 
-  submit() {
+  async submit() {
     if (this.firstMove === undefined) {
       Swal.fire({
         title: `<p style="font-family:'Aladin';color:cadetblue; font-size: 200%">Please, choose who will make a first move!</p>`,
@@ -56,9 +60,12 @@ export class MapSetupComponent implements OnInit {
       if (this.checkForEmptyCounties()) {
         this.dataTransfer.firstMove = this.firstMove;
         this.dataTransfer.fildState = this.globalMap;
-        //console.log(this.dataTransfer.fildState);
-        this.recordState();
-        this.router.navigate(['gameFlow'])
+        if (await this.connectionCheck()) {
+        // await this.checkForOldGame();
+          //this.createSaveFile();
+          this.recordState();
+          this.router.navigate(['gameFlow'])
+        }
       }
     }
   }
@@ -207,10 +214,12 @@ export class MapSetupComponent implements OnInit {
     });
 
   }
-  oldGameExists() {
+ async oldGameExists() {
     Swal.fire({
       title: `<p style="font-family:'Aladin';color:cadetblue;">The previous game was found. Do you want to continue it?</p>`,
       showDenyButton: true,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
       denyButtonColor: '#5f9ea0',
       confirmButtonColor: '#5f9ea0',
       background: '#e6e6e6',
@@ -238,23 +247,23 @@ export class MapSetupComponent implements OnInit {
     });
   }
 
-  createSaveFile() {
-    this.dataTransfer.createSaveFile().subscribe((result) => {
+   createSaveFile() {
+    this.dataTransfer.createSaveFile().subscribe(async (result) => {
       var res = result;
 
       if (!res) {
-        this.checkForOldGame();
+      await  this.checkForOldGame();
       }
     });
   }
 
-  checkForOldGame() {
-    this.dataTransfer.checkForOldGame().subscribe((result) => {
+ async checkForOldGame() {
+    this.dataTransfer.checkForOldGame().subscribe(async (result) => {
 
       var res = result;
 
       if (res) {
-        this.oldGameExists();
+      await  this.oldGameExists();
       }
     });
 
@@ -265,17 +274,20 @@ export class MapSetupComponent implements OnInit {
     });
   }
 
-  connectionCheck() {
+  async connectionCheck(): Promise<boolean> {
     this.spinner.show();
-    this.dataTransfer.connectionCheck().subscribe(() => {
+    const observable = this.dataTransfer.connectionCheck();
+    observable.subscribe(() => { 
+    // await this.createSaveFile();     
       this.spinner.hide();
-    }, (error) => {
+    }, (error) => {      
       if (!error.ok) {
         this.spinner.hide();
         this.errorLocalServerNotFound();
       }
-    });
-    //this.spinner.hide();
+    });   
+    return observable.toPromise();
+    //this.spinner.hide();   
   }
 
   errorLocalServerNotFound() {

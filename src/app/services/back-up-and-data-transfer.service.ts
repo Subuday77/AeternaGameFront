@@ -35,6 +35,6 @@ export class BackUpAndDataTransferService {
     return this.server.get('http://localhost:8081/backup/newgame');
   }
   connectionCheck(): Observable<any> {
-  return this.server.get('http://localhost:8081/backup/check');
+  return this.server.get('http://localhost:8081/backup/cnncheck');
   }
 }
